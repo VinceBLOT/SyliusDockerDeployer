@@ -1,0 +1,14 @@
+.DEFAULT_GOAL := help
+THIS_FILE := $(lastword $(MAKEFILE_LIST))
+THIS_PATH :=$(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+
+help:
+	@echo ''
+	@echo 'Warning: This Makefile should only be called via CI-CD scripts.'
+	@echo ''
+
+include $(THIS_PATH)/deploy/makefiles/docker.mk
+include $(THIS_PATH)/deploy/makefiles/docker-remote.mk
+include $(THIS_PATH)/deploy/makefiles/helpers.mk
+include $(THIS_PATH)/deploy/makefiles/helpers-remote.mk
+include $(THIS_PATH)/deploy/makefiles/setup-remote.mk

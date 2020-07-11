@@ -1,0 +1,22 @@
+# Redirect http://domain.com or http://www.domain.com to https://www.domain.com
+server {
+    server_name ${SERVER_NAME} www.${SERVER_NAME};
+    include conf.d/snippets/80.conf;
+    location / {
+        return 301 https://www.${SERVER_NAME}$request_uri;
+    }
+}
+
+# Redirect https://domain.com to https://www.domain.com
+server {
+    server_name ${SERVER_NAME};
+    include conf.d/snippets/443.conf;
+    return 301 https://www.${SERVER_NAME}$request_uri;
+}
+
+server {
+    server_name www.${SERVER_NAME};
+    include conf.d/snippets/443.conf;
+    include conf.d/snippets/gzip.conf;
+    include conf.d/snippets/location.conf;
+}

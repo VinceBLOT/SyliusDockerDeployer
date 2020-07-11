@@ -1,0 +1,51 @@
+version: '3.5'
+services:
+
+  elasticsearch:
+    image: ${ELASTICSEARCH_IMAGE}
+    container_name: 'elasticsearch'
+    volumes:
+      - '../../sylius/data/elasticsearch/data:/usr/share/elasticsearch/data'
+    environment:
+      # Setting network.host to something other than localhost triggers production
+      # mode, which enables the bootstrap checks.
+      # - network.host=0.0.0.0 (default 0.0.0.0)
+      # Disable swapping for performance and node stability
+      - bootstrap.memory_lock=true
+      # Cluster with only one node
+      - cluster.name=sylius
+      - discovery.type=single-node
+      - node.name=sylius-1
+      # Xms (minimum heap size) and Xmx (maximum heap size) settings
+      # The value for these setting depends on the amount of RAM available on your server
+      # Enforce bootstrap checks on single-node setup
+      # https://www.elastic.co/guide/en/elasticsearch/reference/6.8/bootstrap-checks.html
+      - "ES_JAVA_OPTS=-Xms${ELASTICSEARCH_HEAP_SIZE} -Xmx${ELASTICSEARCH_HEAP_SIZE} -Des.enforce.bootstrap.checks=true -Xlog:disable -Xlog:all=warning:stderr:utctime,level,tags -Xlog:gc=debug:stderr:utctime"
+    # ulimit can be used to change resource limits on a temporary basis
+    ulimits:
+      # To set the maximum number of open files
+      # https://www.elastic.co/guide/en/elasticsearch/reference/6.8/setting-system-settings.html
+      nofile:
+        soft: 65536
+        hard: 65536
+      # To set the maximum number of threads
+      # https://www.elastic.co/guide/en/elasticsearch/reference/6.8/max-number-threads-check.html
+      nproc: 65536
+      # Disable swapping for performance and node stability
+      memlock:
+        soft: -1
+        hard: -1
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "5"
+    expose:
+      - 9200
+      # # Only for grid schema
+      # - 9300
+    networks:
+     - 'sylius'
+    restart: 'always'
+    depends_on:
+      - php

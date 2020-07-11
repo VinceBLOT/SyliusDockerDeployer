@@ -1,0 +1,21 @@
+# Services
+##############################
+
+# Here you can control what services your deployment uses. It doesn't check for
+# inconsistencies, so be careful.
+
+WITH_ADMINER=1
+WITH_CHROME_HEADLESS=0
+WITH_ELASTICSEARCH=0
+WITH_KIBANA=0
+WITH_MAILHOG=1
+WITH_MYSQL=1
+WITH_NGINX=1
+WITH_PHP=1
+WITH_XDEBUG=0
+WITH_PROXY=1
+WITH_SELENIUM_CHROME=0
+WITH_MEMCACHED=0
+# If you enable Varnish, remember to configure also env/docker/network 
+# PROXY_DOWNSTREAM_HOST and PROXY_DOWNSTREAM_PORT to varnish ones.
+WITH_VARNISH=0

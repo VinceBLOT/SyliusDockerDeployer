@@ -1,0 +1,26 @@
+# Nginx SSL termination proxy
+##############################
+
+# Whether to use *-WWW profile (if your server name is in www subdomain) or 
+# *-NON-WWW (if it is one subdomain other than www or localhost). Usually
+# *-WWW profile is used in your production site and *-NON-WWW in your 
+# staging one and localhost.
+#
+# To automate the certificate request, we need to define what profile to use at
+# every step of the process. NON-SECURE-* before request and SECURE-* after.
+#
+# In local development stages you usually choose the NON-SECURE-NON-WWW option.
+# In production, if your host is under a subdomain other than www, you should
+# choose the *-NON-WWW option.
+#
+# Before issuing the certificate request, PROXY_PROFILE_NON_SECURE will be used
+# in PROXY_PROFILE, and after issuing it successfully, it will change to 
+# PROXY_PROFILE_SECURE.
+#
+# Note that non www hostnames like "http://domain.com" are not supported in
+# production.
+#
+# Values: NON-SECURE-WWW|NON-SECURE-NON-WWW|SECURE-WWW|SECURE-NON-WWW
+PROXY_PROFILE=NON-SECURE-NON-WWW
+PROXY_PROFILE_SECURE=NON-SECURE-NON-WWW
+PROXY_PROFILE_NON_SECURE=NON-SECURE-NON-WWW

@@ -1,0 +1,11 @@
+# PHP
+##############################
+
+PHP_MEMORY_LIMIT=2G
+PHP_DATE_TIMEZONE=UTC
+PHP_SESSIONS_SAVE_PATH=/usr/local/php/sessions
+PHP_OPCACHE_ENABLE=1
+PHP_XDEBUG_ENABLE=0
+# Must be the same subnet as in env/docker/network NETWORK_SUBNET
+PHP_XDEBUG_HOST_IP=172.${NETWORK_SUBNET}.0.1
+PHP_XDEBUG_REMOTE_PORT=9000

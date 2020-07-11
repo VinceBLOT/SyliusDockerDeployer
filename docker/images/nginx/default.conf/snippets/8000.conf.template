@@ -1,0 +1,6 @@
+listen ${NGINX_PORT};
+index index.php;
+access_log off;
+error_log stderr;
+root ${APP_PUBLIC_PATH};
+server_tokens off;

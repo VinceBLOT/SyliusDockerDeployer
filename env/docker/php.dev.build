@@ -1,0 +1,6 @@
+# PHP
+##############################
+
+# We need to raise the default limit to at least 4Gb to build sucessfully
+PHP_MEMORY_LIMIT=8G
+PHP_OPCACHE_ENABLE=0

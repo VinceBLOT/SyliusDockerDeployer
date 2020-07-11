@@ -1,0 +1,9 @@
+# Source
+##############################
+
+# To be able to fetch the source from github, and to prevent composer to reach
+# rate limits, you need a github OAuth Token.
+GITHUB_OAUTH_TOKEN=OVERRIDE_ME
+STACK_REPO=https://github.com/anthid/SyliusDockerDeployer.git
+APP_REPO=https://github.com/Sylius/Sylius-Standard.git
+APP_BRANCH=1.7

@@ -1,0 +1,9 @@
+# Deploy
+##############################
+
+# Control Deployer and Composer verbosity.
+# Values: v|vv|vvv
+VERBOSITY=vv
+# In dev environments you may want to populate database.
+# Values: 0|setup|fixtures|dump (dump is not implemented yet)
+POPULATE_DATABASE=0

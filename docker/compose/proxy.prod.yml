@@ -1,0 +1,13 @@
+version: '3.5'
+services:
+
+  proxy:
+    volumes:
+      - '../../${SSL_KEYS_PATH}:/etc/nginx/certs'
+      - '../volumes/letsencrypt/www:/var/www/html'
+    environment:
+      ALLOW_LIST_DOMAINS: ${ALLOW_LIST_DOMAINS}
+      LETS_ENCRYPT_DOMAIN: ${LETS_ENCRYPT_DOMAIN}
+      LETS_ENCRYPT_EMAIL: ${LETS_ENCRYPT_EMAIL}
+      SSL_HEADER_STRICT_TRANSPORT_SECURITY: ${SSL_HEADER_STRICT_TRANSPORT_SECURITY}
+      SSL_KEYS_PATH: ${STACK_PATH}/${SSL_KEYS_PATH}

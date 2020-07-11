@@ -1,0 +1,204 @@
+vcl 4.0;
+
+backend default {
+  .host = "nginx";
+  .port = "${NGINX_PORT}";
+}
+
+# ACL to allow purges
+acl purge {
+  "php";
+  "nginx";
+  "localhost";
+  "127.0.0.1";
+  "::1";
+}
+
+sub vcl_recv {
+
+  # non-www to www redirect
+  if (req.http.host ~ "^${SERVER_NAME}") {
+    return (synth(750, "Moved Permanently"));
+  }
+
+  # http to https redirect
+  if (req.http.X-Forwarded-Proto !~ "(?i)https") {
+    return (synth(850, "Moved Permanently"));
+  }
+
+  # Normalize the header, remove the port
+  if (req.http.Host ~ ":[0-9]+") {
+    set req.http.Host = regsub(req.http.Host, ":[0-9]+", "");
+  }
+
+  # Strip hash, server doesn't need it
+  if (req.url ~ "\#") {
+    set req.url = regsub(req.url, "\#.*$", "");
+  }
+
+  # Removing Google Analytics added parameters
+  if (req.url ~ "(\?|&)(utm_source|utm_medium|utm_campaign|utm_content|gclid|cx|ie|cof|siteurl)=") {
+    set req.url = regsuball(req.url, "&(utm_source|utm_medium|utm_campaign|utm_content|gclid|cx|ie|cof|siteurl)=([A-z0-9_\-\.%25]+)", "");
+    set req.url = regsuball(req.url, "\?(utm_source|utm_medium|utm_campaign|utm_content|gclid|cx|ie|cof|siteurl)=([A-z0-9_\-\.%25]+)", "?");
+    set req.url = regsub(req.url, "\?&", "?");
+    set req.url = regsub(req.url, "\?$", "");
+  }
+
+  # To ensure that the Symfony Router generates URLs correctly with Varnish,
+  # an X-Forwarded-Port header must be present for Symfony to use the correct port number.
+  if (req.http.X-Forwarded-Proto == "https") {
+    set req.http.X-Forwarded-Port = "443";
+  } else {
+    set req.http.X-Forwarded-Port = "80";
+  }
+
+  # Passing real client's IP to the backend
+  if (req.restarts == 0) {
+    if (req.http.X-Real-IP) {
+      set req.http.X-Forwarded-For = req.http.X-Real-IP;
+    } else if (req.http.X-Forwarded-For) {
+      set req.http.X-Forwarded-For = req.http.X-Forwarded-For + ", " + client.ip;
+    } else {
+      set req.http.X-Forwarded-For = client.ip;
+    }
+  }
+
+  # Remove the proxy header (see https://httpoxy.org/#mitigate-varnish)
+  unset req.http.proxy;
+
+  # https://www.regextester.com/100109
+
+  # Don' t know, so no cache
+  if (
+    req.url ~ "/media/cache/resolve/" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/_partial/taxons" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/_partial/cart" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/_partial/products" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/_partial/products/[a-zA-Z0-9_]+/reviews" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/_partial/products/[a-zA-Z0-9_]+/associations") {
+
+    return (pass);
+  }
+
+  # Never cache these pages
+  if (
+    req.url ~ "\.(png|gif|jpg|jpeg|ico|txt|css|js)$" ||
+    req.url ~ "^/admin" ||
+    req.url ~ "^/api" ||
+    req.url ~ "^/_wdt" ||
+    req.url ~ "^/_profiler" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/ajax/users" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/ajax/cart" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/ajax/render-province-form" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/login" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/login-check" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/logout" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/register" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/forgotten-password" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/verify" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/account" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/order" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/switch-currency" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/switch-locale" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/cart" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/checkout" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/contact/" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/products/[a-z\-]+/reviews/new$") {
+
+    return (pass);
+  }
+
+  # Always cache these pages (Home, CMS and Products)
+  # req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/products/{slug}" ||
+  # req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/taxons/{slug}" ||
+  # req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/products/{slug}/reviews/" ||
+  # req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/products/{slug}/reviews/new" ||
+  if (
+    req.url ~ "^/$" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/taxons" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/block" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/blocks" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/faq" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/page" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/pages" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/section" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/products/[a-z\-]+$" ||
+    req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/products/[a-z\-]+/reviews/$") {
+
+    unset req.http.Cookie;
+    unset req.http.Cache-Control;
+  }
+
+  # # Remove all cookies except the session ID.
+  # if (req.http.Cookie) {
+  #   set req.http.Cookie = ";" + req.http.Cookie;
+  #   set req.http.Cookie = regsuball(req.http.Cookie, "; +", ";");
+  #   set req.http.Cookie = regsuball(req.http.Cookie, ";(PHPSESSID)=", "; \1=");
+  #   set req.http.Cookie = regsuball(req.http.Cookie, ";[^ ][^;]*", "");
+  #   set req.http.Cookie = regsuball(req.http.Cookie, "^[; ]+|[; ]+$", "");
+  #   if (req.http.Cookie == "") {
+  #     # If there are no more cookies, remove the header to get page cached.
+  #     unset req.http.Cookie;
+  #   }
+  # }
+
+  # Allow purging
+  if (req.method == "PURGE") {
+    if (!client.ip ~ purge) {
+      return(synth(405, "This IP is not allowed to send PURGE requests."));
+    }
+
+    return (purge);
+  }
+}
+
+sub vcl_synth {
+
+  # non-www to www redirect
+  if (resp.status == 750) {
+    set resp.http.Location = "https://www.${SERVER_NAME}" + req.url;
+    set resp.status = 301;
+    return(deliver);
+  }
+
+  # non-ssl to ssl redirect
+  if (resp.status == 850) {
+    set resp.http.Location = "https://" + req.http.host + req.url;
+    set resp.status = 301;
+    return (deliver);
+  }
+}
+
+sub vcl_backend_response {
+
+  # Always cache these pages (Home, CMS and Products)
+  # req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/products/{slug}" ||
+  # req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/taxons/{slug}" ||
+  # req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/products/{slug}/reviews/" ||
+  # req.url ~ "^/[a-z]{2}(_[A-Z]{2})?/products/{slug}/reviews/new" ||
+  if (
+    bereq.url ~ "^/$" ||
+    bereq.url ~ "^/[a-z]{2}(_[A-Z]{2})?/taxons" ||
+    bereq.url ~ "^/[a-z]{2}(_[A-Z]{2})?/block" ||
+    bereq.url ~ "^/[a-z]{2}(_[A-Z]{2})?/blocks" ||
+    bereq.url ~ "^/[a-z]{2}(_[A-Z]{2})?/faq" ||
+    bereq.url ~ "^/[a-z]{2}(_[A-Z]{2})?/page" ||
+    bereq.url ~ "^/[a-z]{2}(_[A-Z]{2})?/pages" ||
+    bereq.url ~ "^/[a-z]{2}(_[A-Z]{2})?/section" ||
+    bereq.url ~ "^/[a-z]{2}(_[A-Z]{2})?/products/[a-z\-]+$" ||
+    bereq.url ~ "^/[a-z]{2}(_[A-Z]{2})?/products/[a-z\-]+/reviews/$") {
+
+    unset beresp.http.Set-Cookie;
+    unset beresp.http.Cache-Control;
+    unset beresp.http.Expires;
+  }
+}
+
+sub vcl_deliver {
+  # Some debugging flags
+  if (obj.hits > 0) {
+    set resp.http.X-Cache = "hit: " + req.http.host + req.url;
+  } else {
+    set resp.http.X-Cache = "miss: " + req.http.host + req.url;
+  }
+}

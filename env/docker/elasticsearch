@@ -1,0 +1,9 @@
+# Elasticsearch
+##############################
+
+# The value for this setting depends on the amount of RAM
+# available on your server. By default is set to 1g, but
+# probably must be set to a higher value in production.
+#
+# Values: 64m, 512m, 1g, 16g...
+ELASTICSEARCH_HEAP_SIZE=1g

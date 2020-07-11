@@ -1,0 +1,20 @@
+version: '3.5'
+services:
+
+  selenium-chrome:
+    image: ${SELENIUM_IMAGE}
+    container_name: 'selenium-chrome'
+    # Workaround to avoid the browser crashing (mac)
+    # shm_size: '2gb'
+    volumes:
+      # Needed for file uploads. Must be the same as in app
+      - '../../${APP_DEVELOPMENT_PATH}:${STACK_PATH}/${APP_CURRENT_RELEASE_PATH}'
+      # Workaround to avoid the browser crashing (linux)
+      - '/dev/shm:/dev/shm'
+    expose:
+      - 4444
+    networks:
+      - 'sylius'
+    restart: 'always'
+    depends_on:
+      - nginx

@@ -1,0 +1,35 @@
+# gzip
+# http://nginx.org/en/docs/http/ngx_http_gzip_module.html
+# Gzip only compress response body with status code 200, 403, 404
+
+gzip on;
+gzip_comp_level 7;
+gzip_disable "msie6";
+gzip_min_length 256;
+gzip_vary on;
+gzip_proxied any;
+# a pretty comprehensive list of content mime types that we want to compress
+# there's a lot of repetition here because different applications might use different
+# (and possibly non-standard) types. we don't really care, we still want them included
+# don't include text/html -- it is always included anyway
+gzip_types
+    text/css
+    text/plain
+    text/javascript
+    text/xml
+    application/javascript
+    application/json
+    application/x-javascript
+    application/xml
+    application/xml+rss
+    application/xhtml+xml
+    application/x-font-ttf
+    application/x-font-opentype
+    application/vnd.ms-fontobject
+    font/opentype
+    font/woff
+    font/woff2
+    image/svg+xml
+    image/x-icon
+    application/rss+xml
+    application/atom_xml;

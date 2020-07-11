@@ -1,0 +1,17 @@
+# Varnish
+##############################
+
+# Values: DISABLED|LOCAL|PRODUCTION
+VARNISH_PROFILE=DISABLED
+
+# Memory storage
+# syntax: malloc[,size]
+# VARNISH_STORAGE=malloc,100M
+# Filesystem storage
+# syntax: file[,path[,size[,granularity]]]
+VARNISH_STORAGE=file,/var/lib/varnish/storage/storage.bin,10M
+
+# 3600 is 1 hour in seconds
+# 2419200 is 4 weeks in seconds
+VARNISH_DEFAULT_TTL=3600
+VARNISH_DEFAULT_GRACE=3600

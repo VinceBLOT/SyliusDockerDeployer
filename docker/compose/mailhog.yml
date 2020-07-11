@@ -1,0 +1,22 @@
+version: '3.5'
+services:
+
+  mailhog:
+    image: ${MAILHOG_IMAGE}
+    container_name: 'mailhog'
+    environment:
+      MH_STORAGE: memory
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "5"
+    ports:
+      - ${MAILHOG_PORT}:8025
+    expose:
+      - 1025
+    networks:
+      - 'sylius'
+    restart: 'always'
+    depends_on:
+      - php

@@ -1,0 +1,23 @@
+# Sylius
+##############################
+
+APP_SECRET=OVERRIDE_ME
+
+# Values: dev|test_cached|prod
+APP_ENV=dev
+# Values: 0|1
+APP_DEBUG=1
+MAILER_URL=smtp://mailhog:1025
+
+# Mysql
+##############################
+
+# Values: sylius_dev|sylius_prod|sylius_test_cached
+MYSQL_DATABASE=sylius_dev
+
+# To generate random passwords:
+# < /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c${1:-32};echo;
+MYSQL_ROOT_PASSWORD=OVERRIDE_ME
+
+# Need to be owned by root to be auto deployed
+DATABASE_URL=mysql://root:${MYSQL_ROOT_PASSWORD}@mysql/${MYSQL_DATABASE}

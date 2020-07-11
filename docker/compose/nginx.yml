@@ -1,0 +1,27 @@
+version: '3.5'
+services:
+
+  nginx:
+    image: ${NGINX_IMAGE}
+    container_name: 'nginx'
+    entrypoint: ["docker-entrypoint.sh"]
+    volumes:
+      - '../images/nginx/default.conf:/etc/nginx/conf.d/template'
+      - '../images/nginx/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh'
+    environment:
+      APP_PUBLIC_PATH: ${STACK_PATH}/${APP_PUBLIC_PATH}
+      SERVER_NAME: ${SERVER_NAME}
+      NGINX_PORT: ${NGINX_PORT}
+      NGINX_PROFILE: ${NGINX_PROFILE}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "5"
+    expose:
+      - ${NGINX_PORT}
+    networks:
+      - 'sylius'
+    restart: 'always'
+    depends_on:
+      - php

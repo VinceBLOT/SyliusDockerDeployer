@@ -1,0 +1,6 @@
+# Nginx SSL termination proxy
+##############################
+
+PROXY_PROFILE=SECURE-WWW
+PROXY_PROFILE_SECURE=SECURE-WWW
+PROXY_PROFILE_NON_SECURE=NON-SECURE-WWW

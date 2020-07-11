@@ -1,0 +1,12 @@
+listen 80;
+listen [::]:80;
+server_tokens off;
+
+access_log /dev/stdout;
+error_log stderr;
+
+location ~ /\.well-known/acme-challenge {
+    default_type "text/plain";
+    root /var/www/html;
+    allow all;
+}

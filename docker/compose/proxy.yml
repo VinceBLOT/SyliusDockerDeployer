@@ -1,0 +1,32 @@
+version: '3.5'
+services:
+
+  proxy:
+    image: ${NGINX_IMAGE}
+    container_name: 'proxy'
+    entrypoint: ["docker-entrypoint.sh"]
+    volumes:
+      - '../images/proxy/default.conf:/etc/nginx/conf.d/template'
+      - '../images/proxy/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh'
+      - '../../sylius/data/maintenance:${MAINTENANCE_PUBLIC_PATH}'
+    environment:
+      APP_PUBLIC_PATH: ${STACK_PATH}/${APP_PUBLIC_PATH}
+      SERVER_NAME: ${SERVER_NAME}
+      MAINTENANCE_PUBLIC_PATH: ${MAINTENANCE_PUBLIC_PATH}
+      PROXY_DOWNSTREAM_HOST: ${PROXY_DOWNSTREAM_HOST}
+      PROXY_DOWNSTREAM_PORT: ${PROXY_DOWNSTREAM_PORT}
+      PROXY_PROFILE: ${PROXY_PROFILE}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "5"
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - 'sylius'
+    restart: 'always'
+    depends_on:
+      # varnish|nginx
+      - ${PROXY_DOWNSTREAM_HOST}

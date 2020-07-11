@@ -1,0 +1,27 @@
+version: '3.5'
+services:
+
+  chrome-headless:
+    build:
+      context: '../images/chrome/'
+      dockerfile: 'Dockerfile'
+      args:
+        base_image: ${CHROME_BASE_IMAGE}
+    image: ${CHROME_IMAGE}
+    container_name: 'chrome-headless'
+    # https://peter.sh/experiments/chromium-command-line-switches/
+    command: [google-chrome-stable, "--headless", "--disable-gpu", "--no-sandbox", "--remote-debugging-address=0.0.0.0", "--remote-debugging-port=9222", "--enable-automation", "--disable-background-networking", "--no-default-browser-check", "--no-first-run", "--disable-popup-blocking", "--disable-default-apps", "--allow-insecure-localhost", "--disable-translate", "--disable-extensions", "--enable-features=Metal", "--window-size=1920,1080", "--no-proxy-server"]
+    # Workaround to avoid the browser crashing (mac)
+    shm_size: '2gb'
+    volumes:
+      # Needed for file uploads. Must be the same as in app
+      - '../../${APP_DEVELOPMENT_PATH}:${STACK_PATH}/${APP_CURRENT_RELEASE_PATH}'
+      # Workaround to avoid the browser crashing (linux)
+      - '/dev/shm:/dev/shm'
+    expose:
+      - 9222
+    networks:
+      - 'sylius'
+    restart: 'always'
+    depends_on:
+      - nginx

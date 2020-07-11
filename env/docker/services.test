@@ -1,0 +1,8 @@
+# Services
+##############################
+
+# If you are using Sylius prior to 1.7.5 you should use:
+# WITH_SELENIUM_CHROME=1
+# WITH_MEMCACHED=1
+WITH_CHROME_HEADLESS=1
+WITH_MAILHOG=0

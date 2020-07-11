@@ -1,0 +1,35 @@
+version: '3.5'
+services:
+
+  varnish:
+    build:
+      context: '../images/varnish'
+      dockerfile: 'Dockerfile'
+      args:
+        listen_port: ${VARNISH_PORT}
+        base_image: ${VARNISH_BASE_IMAGE}
+    image: ${VARNISH_IMAGE}
+    container_name: 'varnish'
+    entrypoint: ["docker-entrypoint.sh"]
+    command: ["varnish"]
+    volumes:
+      - '../images/varnish/custom.vcl:/etc/varnish/template'
+      - '../images/varnish/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh'
+      - '../../sylius/data/varnish/storage:/var/lib/varnish/storage'
+    environment:
+      SERVER_NAME: ${SERVER_NAME}
+      NGINX_PORT: ${NGINX_PORT}
+      VARNISH_DEFAULT_GRACE: ${VARNISH_DEFAULT_GRACE}
+      VARNISH_DEFAULT_TTL: ${VARNISH_DEFAULT_TTL}
+      VARNISH_PORT: ${VARNISH_PORT}
+      VARNISH_PROFILE: ${VARNISH_PROFILE}
+      VARNISH_STORAGE: ${VARNISH_STORAGE}
+    expose:
+      - ${VARNISH_PORT}
+      # # Varnish CLI
+      # - 6082
+    networks:
+      - 'sylius'
+    restart: 'always'
+    depends_on:
+      - nginx

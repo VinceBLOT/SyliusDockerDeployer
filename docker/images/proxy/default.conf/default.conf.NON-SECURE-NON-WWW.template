@@ -1,0 +1,6 @@
+server {
+    server_name ${SERVER_NAME};
+    include conf.d/snippets/80.conf;
+    include conf.d/snippets/gzip.conf;
+    include conf.d/snippets/location.conf;
+}

@@ -1,0 +1,86 @@
+ARG base_image
+FROM $base_image
+
+# System utilities
+RUN set -xe \
+    && apk add --no-cache \
+        acl \
+        git \
+        openssh \
+        rsync
+
+# PHP extensions required by Sylius / Sylius plugins
+RUN set -xe \
+    && apk add --no-cache --virtual .build-deps \
+        coreutils \
+        # for gd extension
+        freetype-dev \
+        libjpeg-turbo-dev \
+        libpng-dev \
+        # for intl extension
+        icu-dev \
+        # for zip
+        libzip-dev \
+    && apk add --no-cache \
+        libzip \
+    && docker-php-ext-configure gd \
+        --with-freetype \
+        --with-jpeg \
+        --enable-gd \
+    && docker-php-ext-configure intl --enable-intl \
+    && docker-php-ext-configure opcache --enable-opcache \
+    && docker-php-ext-configure pdo_mysql --with-pdo-mysql \
+    && docker-php-ext-configure zip \
+    && docker-php-ext-install -j "$(nproc)" \
+        exif \
+        fileinfo \
+        gd \
+        intl \
+        mysqli \
+        opcache \
+        pdo_mysql \
+        zip \
+    && runDeps="$( \
+        scanelf --needed --nobanner --format '%n#p' --recursive /usr/local \
+            | tr ',' '\n' \
+            | sort -u \
+            | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
+    )" \
+    && apk add --virtual .run-deps $runDeps \
+    && apk del .build-deps \
+    && rm -rf /tmp/*
+
+# Xdebug
+ARG xdebug_version
+RUN set -xe \
+    && apk add --no-cache --virtual .phpize_deps $PHPIZE_DEPS \
+    && pecl install xdebug-$xdebug_version \
+    && docker-php-ext-enable xdebug \
+    && apk del .phpize_deps \
+    && rm -rf /tmp/*
+
+# Yarn
+RUN set -xe \
+    && apk add --no-cache \
+        yarn
+
+# Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# PHP Deployer
+ARG deployer_version
+RUN curl -LO https://deployer.org/releases/v$deployer_version/deployer.phar \
+    && mv deployer.phar /usr/local/bin/dep \
+    && chmod +x /usr/local/bin/dep
+
+# Create regular (non root) user
+ARG user
+ARG uid
+RUN set -eux; \
+    addgroup -g $uid -S $user; \
+    # adduser -u $uid -h /home/$user -D -S -G www-data,root,$user $user
+    adduser -u $uid -h /home/$user -D -S -G $user $user
+
+USER $uid
+
+WORKDIR /home/$user

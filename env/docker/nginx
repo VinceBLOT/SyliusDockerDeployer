@@ -1,0 +1,13 @@
+# Nginx
+##############################
+
+# Whether to use WWW profile (if your server name is in www subdomain) or 
+# NON-WWW (if it is one subdomain other than www or localhost). Usually WWW
+# profile is used in your production site and NON-WWW in your staging one and 
+# localhost.
+#
+# Note that non www hostnames like "http://domain.com" are not supported in
+# production.
+#
+# Values: WWW|NON-WWW
+NGINX_PROFILE=NON-WWW

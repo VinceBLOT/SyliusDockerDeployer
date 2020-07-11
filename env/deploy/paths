@@ -1,0 +1,37 @@
+# Paths
+##############################
+
+# WARNING: DON'T CHANGE ANY OF THIS UNLESS YOU KNOW WHAT YOU ARE DOING.
+
+# Our Stack path will be replicated inside app container and also in remote
+# host (outside docker containers). 
+
+# In almost any remote platform you will have limited write permissions, so you
+# will need to host your stack under your ${LOCAL_USER} folder in dev envs and
+# under ${REMOTE_USER} folder in prod envs.
+STACK_PATH=/home/${LOCAL_USER}/stack
+DEPLOY_PATH=deploy
+ENV_PATH=env
+APP_PATH=sylius
+
+# App paths
+##############################
+
+# Where your development repo will be stored.
+APP_DEVELOPMENT_PATH=${APP_PATH}/dev
+# Where your production app will be deployed.
+APP_DEPLOYMENT_PATH=${APP_PATH}/prod
+# In dev mode, APP_DEVELOPMENT_PATH will be mounted as APP_CURRENT_RELEASE_PATH
+# inside php container to mimic production paths.
+APP_CURRENT_RELEASE_PATH=${APP_PATH}/prod/current
+
+SSH_KEYS_PATH=${APP_PATH}/data/keys/ssh
+SSL_KEYS_PATH=${APP_PATH}/data/keys/ssl
+
+# This path is also hardcoded on deploy/scripts/setup-filesystem.sh, remember to
+# change it there if you make any change.
+MAINTENANCE_PATH=${APP_PATH}/data/maintenance
+
+# For nginx
+APP_PUBLIC_PATH=${APP_PATH}/prod/current/public
+MAINTENANCE_PUBLIC_PATH=/usr/share/nginx/html

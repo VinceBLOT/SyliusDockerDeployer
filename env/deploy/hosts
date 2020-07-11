@@ -1,0 +1,47 @@
+# Host
+##############################
+
+SERVER_NAME=localhost
+HOST_IP=127.0.0.1
+REMOTE_PORT=22
+
+# Remote user
+##############################
+
+# This is the remote user with granted access to your remote host. Sometimes
+# it is "root", but if you have the choice to set it up, setting it to your
+# local user is a good idea.
+REMOTE_USER=${LOCAL_USER}
+# Some remote hosts (like google cloud platform) may need to
+# use sudo for filesystem operations.
+USE_SUDO=0
+# If you need to generate an SSH keypair for remote access, those keys will be
+# generated with "make generate-keys" with the name provided here.
+# If you already have those keys, you have to copy them to keys folder and set
+# their name here.
+REMOTE_IDENTITY=id_rsa
+
+# Local user
+##############################
+
+# Your local user/uid (Non root user). This user will be used to create a
+# regular user inside php container.
+LOCAL_USER=OVERRIDE_ME
+LOCAL_USER_UID=1000
+
+# Let's encrypt
+##############################
+
+LETS_ENCRYPT_EMAIL=
+LETS_ENCRYPT_DOMAIN=
+
+# SSL Headers
+##############################
+
+# Change to 31536000 in production, when you are sure everything is running fine.
+# (31536000 is one year; 86400 is one day)
+SSL_HEADER_STRICT_TRANSPORT_SECURITY=86400
+# This is the list of allowed host in Content-Security-Policy directives,
+# you will need it if you include third party content, like google fonts, google
+# analytics, facebook like button, youtube videos, etc.
+ALLOW_LIST_DOMAINS=https://*.facebook.com https://*.google.com https://*.googleapis.com https://*.google-analytics.com https://*.gstatic.com https://*.youtube.com https://*.youtube-nocookie.com

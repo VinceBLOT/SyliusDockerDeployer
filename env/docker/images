@@ -1,0 +1,38 @@
+# Images
+##############################
+
+# It is strongly advised to build your images on local, upload them to a private
+# registry and pull them from remote. But if you prefer to not do that, you can
+# enable this option to also build on remote.
+BUILD_ON_REMOTE=0
+
+# https://hub.docker.com/_/adminer
+ADMINER_IMAGE=adminer:4.7.7-standalone
+# Google Chrome doesn't allow to install older versions, so latest is the only 
+# choice. We only use versioning to tag the image, not for build. Search for 
+# "google chrome stable latest version" to find the latest version tag.
+CHROME_BASE_IMAGE=debian:buster-slim
+CHROME_IMAGE=custom-build-headless-chrome:83.0.4103.116-1
+# https://hub.docker.com/_/elasticsearch
+ELASTICSEARCH_IMAGE=docker.elastic.co/elasticsearch/elasticsearch:6.8.10
+# https://hub.docker.com/_/kibana
+KIBANA_IMAGE=docker.elastic.co/kibana/kibana:6.8.10
+# https://hub.docker.com/r/mailhog/mailhog/tags
+MAILHOG_IMAGE=mailhog/mailhog:latest
+# https://hub.docker.com/_/memcached
+MEMCACHED_IMAGE=memcached:1.6.6-alpine
+# https://hub.docker.com/_/mysql
+MYSQL_IMAGE=mysql:5.7.30
+# https://hub.docker.com/_/nginx
+NGINX_IMAGE=nginx:1.19.0-alpine
+# https://hub.docker.com/_/php
+PHP_DOCKERFILE=Dockerfile_dev
+PHP_DEPLOYER_VERSION=6.8.0
+PHP_XDEBUG_VERSION=2.9.6
+PHP_BASE_IMAGE=php:7.4.6-fpm-alpine3.11
+PHP_IMAGE=custom-build-php-dev:7.4.6-fpm-alpine3.11
+# https://hub.docker.com/r/selenium/standalone-chrome
+SELENIUM_IMAGE=selenium/standalone-chrome:3.141.59-20200525
+# https://hub.docker.com/_/varnish
+VARNISH_BASE_IMAGE=varnish:6.4.0
+VARNISH_IMAGE=custom-build-varnish:6.4.0

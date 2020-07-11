@@ -1,0 +1,11 @@
+version: '3.5'
+services:
+
+  memcached:
+    image: ${MEMCACHED_IMAGE}
+    container_name: 'memcached'
+    expose:
+      - 11211
+    networks:
+      - 'sylius'
+    restart: 'always'

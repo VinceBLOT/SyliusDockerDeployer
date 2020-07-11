@@ -1,0 +1,59 @@
+# $document_root
+root ${MAINTENANCE_PUBLIC_PATH};
+
+# location precedence: https://stackoverflow.com/a/5238430
+
+location ^~ /media/cache/resolve { 
+    try_files $uri @proxy;
+}
+     
+location ~* \.(jpg|jpeg|png|gif|ico|bmp|svg|css|js|map|eot|ttf|woff|woff2|otf)$ {
+    root ${APP_PUBLIC_PATH};
+    expires 7d;
+    access_log off;
+    add_header Cache-Control public;
+}
+
+location ^~ /admin { 
+    try_files $uri @proxy;
+}
+
+location / {
+    # Maintenance mode if maintenance_on.html is found. Normally maintenance_off.html
+    if (-f $document_root/maintenance_on.html) {
+        return 503;
+    }
+
+    try_files $uri @proxy;
+}
+
+location @proxy {
+
+    # Headers
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Host $host;
+    if ($scheme = http) {
+        set $xport 80;
+        set $xforwarded off;
+    }
+    if ($scheme = https) {
+        set $xport 443;
+        set $xforwarded on;
+    }
+    proxy_set_header X-Forwarded-Port $xport;
+    proxy_set_header X-Forwarded-SSL $xforwarded;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Real-IP $remote_addr;
+
+    # Force timeouts if one backend die
+    # proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+
+    # Normal proxy mode
+    proxy_pass http://${PROXY_DOWNSTREAM_HOST}:${PROXY_DOWNSTREAM_PORT};
+}
+
+error_page 503 @maintenance;
+location @maintenance {
+    rewrite ^(.*)$ /maintenance_on.html break;
+}

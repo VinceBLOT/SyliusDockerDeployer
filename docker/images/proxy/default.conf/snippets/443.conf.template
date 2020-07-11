@@ -1,0 +1,47 @@
+listen 443 ssl http2;
+listen [::]:443 ssl http2;
+server_tokens off;
+
+access_log /dev/stdout;
+error_log stderr;
+
+location ~ /\.well-known/acme-challenge {
+    default_type "text/plain";
+    root /var/www/html;
+    allow all;
+}
+
+# Certificates
+ssl_certificate /etc/nginx/certs/live/${SERVER_NAME}/fullchain.pem;
+ssl_certificate_key /etc/nginx/certs/live/${SERVER_NAME}/privkey.pem;
+
+# SSL
+ssl_session_timeout 2h;
+ssl_session_cache shared:SSL:50m;
+ssl_session_tickets off;
+ssl_buffer_size 8k;
+
+# DH Param
+ssl_dhparam /etc/nginx/certs/dhparam.pem;
+ssl_ecdh_curve prime256v1:secp384r1:secp521r1;
+
+# Ciphers
+ssl_protocols TLSv1.3 TLSv1.2 TLSv1.1 TLSv1;
+ssl_prefer_server_ciphers on;
+ssl_ciphers 'TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS';
+
+# OCSP Stapling
+ssl_stapling on;
+ssl_stapling_verify on;
+ssl_trusted_certificate /etc/nginx/certs/live/${SERVER_NAME}/chain.pem;
+resolver 8.8.8.8 8.8.4.4 valid=300s;
+resolver_timeout 5s;
+
+# Security headers
+add_header Strict-Transport-Security "max-age=${SSL_HEADER_STRICT_TRANSPORT_SECURITY}; preload" always;
+add_header Content-Security-Policy "default-src 'self' *.${SERVER_NAME}; script-src 'self' 'unsafe-inline' *.${SERVER_NAME} ${ALLOW_LIST_DOMAINS}; style-src 'self' 'unsafe-inline' *.${SERVER_NAME} ${ALLOW_LIST_DOMAINS}; img-src 'self' *.${SERVER_NAME} ${ALLOW_LIST_DOMAINS} data: blob:; connect-src 'self' *.${SERVER_NAME} https:; font-src 'self' *.${SERVER_NAME} data: ${ALLOW_LIST_DOMAINS}; object-src 'none'; media-src 'self' *.${SERVER_NAME} ${ALLOW_LIST_DOMAINS}; frame-src 'self' *.${SERVER_NAME} ${ALLOW_LIST_DOMAINS}; form-action 'self' *.${SERVER_NAME} ${ALLOW_LIST_DOMAINS}; frame-ancestors 'self' *.${SERVER_NAME}; plugin-types 'none'; base-uri 'self' *.${SERVER_NAME}; block-all-mixed-content;" always;
+add_header X-Frame-Options "SAMEORIGIN" always;
+add_header X-XSS-Protection "1; mode=block" always;
+add_header X-Content-Type-Options "nosniff" always;
+add_header Referrer-Policy "no-referrer-when-downgrade" always;
+add_header Feature-Policy "accelerometer 'self'; ambient-light-sensor 'self'; autoplay 'self'; camera 'self'; fullscreen 'self'; geolocation 'self'; gyroscope 'self'; magnetometer 'self'; microphone 'self'; midi 'self'; payment 'self'; speaker 'self'; usb 'self'; vibrate 'self'; vr 'self'" always;

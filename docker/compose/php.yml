@@ -1,0 +1,44 @@
+version: '3.5'
+services:
+
+  php:
+    build:
+      context: '../images/php/'
+      dockerfile: ${PHP_DOCKERFILE}
+      args:
+        base_image: ${PHP_BASE_IMAGE}
+        deployer_version: ${PHP_DEPLOYER_VERSION}
+        xdebug_version: ${PHP_XDEBUG_VERSION}
+        user: ${LOCAL_USER}
+        uid: ${LOCAL_USER_UID}
+    image: ${PHP_IMAGE}
+    container_name: 'php'
+    volumes:
+      - '../images/php/zzz-php.custom.ini:/usr/local/etc/php/conf.d/zzz-php.custom.ini'
+      - '../images/php/zzz-php-fpm.custom.conf:/usr/local/etc/php-fpm.d/zzz-php-fpm.custom.conf'
+      - '../../sylius/data/php/sessions:${PHP_SESSIONS_SAVE_PATH}'
+    environment:
+      # php.ini
+      PHP_DATE_TIMEZONE: ${PHP_DATE_TIMEZONE}
+      PHP_SESSIONS_SAVE_PATH: ${PHP_SESSIONS_SAVE_PATH}
+      PHP_MEMORY_LIMIT: ${PHP_MEMORY_LIMIT}
+      PHP_OPCACHE_ENABLE: ${PHP_OPCACHE_ENABLE}
+      # App
+      APP_DEBUG: ${APP_DEBUG}
+      APP_ENV: ${APP_ENV}
+      APP_SECRET: ${APP_SECRET}
+      DATABASE_URL: ${DATABASE_URL}
+      MAILER_URL: ${MAILER_URL}
+      TRUSTED_PROXIES: 172.${NETWORK_SUBNET}.0.0/16
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "5"
+    expose:
+      - 9000
+    networks:
+      - 'sylius'
+    restart: 'always'
+    depends_on:
+      - mysql

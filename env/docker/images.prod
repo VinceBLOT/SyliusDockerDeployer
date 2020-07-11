@@ -1,0 +1,5 @@
+# Images
+##############################
+
+PHP_DOCKERFILE=Dockerfile_prod
+PHP_IMAGE=custom-build-php-prod:7.4.6-fpm-alpine3.11

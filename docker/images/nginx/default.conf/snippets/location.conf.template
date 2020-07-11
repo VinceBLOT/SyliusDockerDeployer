@@ -1,0 +1,69 @@
+# https://stackoverflow.com/questions/17798457/how-can-i-make-this-try-files-directive-work/17800131#17800131
+
+# You probably understand the first part, location / matches all locations,
+# unless it's matched by a more specific location, like location /test for example
+
+# $uri
+# The second part ( the try_files ) means when you receive a URI that's matched by
+# this block try $uri first, for example http://example.com/images/image.jpg nginx
+# will try to check if there's a file inside /images called image.jpg if found it
+# will serve it first.
+
+# $uri/
+# Second condition is $uri/ which means if you didn't find the first condition $uri
+# try the URI as a directory, for example http://example.com/images/, ngixn will first
+# check if a file called images exists then it wont find it, then goes to second
+# check $uri/ and see if there's a directory called images exists then it will try
+# serving it.
+
+# Side note: if you don't have autoindex on you'll probably get a 403 forbidden error,
+# because directory listing is forbidden by default. If you have index defined, nginx
+# will try to check if the index exists inside this folder before trying directory
+# listing.
+
+# Third condition /index.php?$is_args$args is considered a fall back option, (you need
+# to use at least 2 options, one and a fall back), you can use as much as you can.
+# If the third condition fails too, then nginx will serve the 404 error page.
+
+# try files $file $directory /fallback option
+# $args arguments in the request line
+# $is_args The convenience variable $is_args contains a ? when necessary, and is empty
+# when there was no query string.
+location / {
+    try_files $uri /index.php$is_args$args;
+}
+
+location ~ ^/index\.php(/|$) {
+    try_files $uri =404;
+    # Bypass the fact that try_files resets $fastcgi_path_info
+    # see: http://trac.nginx.org/nginx/ticket/321
+    set $path_info $fastcgi_path_info;
+    fastcgi_param PATH_INFO $path_info;
+    fastcgi_index index.php;
+    fastcgi_pass php:9000;
+    fastcgi_split_path_info ^(.+\.php)(/.+)$;
+
+    # When you are using symlinks to link the document root to the
+    # current version of your application, you should pass the real
+    # application path instead of the path to the symlink to PHP
+    # FPM.
+    # Otherwise, PHP's OPcache may not properly detect changes to
+    # your PHP files (see https://github.com/zendtech/ZendOptimizerPlus/issues/126
+    # for more information).
+    # fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+    # fastcgi_param DOCUMENT_ROOT $realpath_root;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    
+    # Prevents URIs that include the front controller. This will 404:
+    # http://domain.tld/index.php/some-path
+    # Remove the internal directive to allow URIs like this
+    internal;
+
+    include fastcgi_params;
+}
+
+# return 404 for all other php files not matching the front controller
+# this prevents access to other php files you don't want to be accessible.
+location ~ \.php$ {
+    return 404;
+}

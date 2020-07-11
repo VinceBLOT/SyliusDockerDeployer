@@ -1,0 +1,18 @@
+# Network
+##############################
+
+# Must be the same subnet as in env/docker/php PHP_XDEBUG_HOST_IP
+NETWORK_SUBNET=21
+
+# Backends ports
+NGINX_PORT=8000
+VARNISH_PORT=8080
+
+# To enable/disable varnish.
+# Values: varnish|nginx
+PROXY_DOWNSTREAM_HOST=nginx
+# Values: ${NGINX_PORT}|${VARNISH_PORT}
+PROXY_DOWNSTREAM_PORT=${NGINX_PORT}
+
+MAILHOG_PORT=8025
+ADMINER_PORT=8033

@@ -1,0 +1,21 @@
+version: '3.5'
+services:
+
+  adminer:
+    container_name: 'adminer'
+    image: ${ADMINER_IMAGE}
+    command: php -S [::]:${ADMINER_PORT} -t /var/www/html
+    environment:
+      ADMINER_PORT: ${ADMINER_PORT}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "5"
+    ports:
+      - ${ADMINER_PORT}:${ADMINER_PORT}
+    networks:
+      - 'sylius'
+    restart: 'always'
+    depends_on:
+      - mysql

@@ -1,0 +1,25 @@
+version: '3.5'
+services:
+
+  mysql:
+    image: ${MYSQL_IMAGE}
+    container_name: 'mysql'
+    command: 
+      - '--explicit_defaults_for_timestamp=1'
+      - '--innodb_buffer_pool_size=64M'
+    volumes:
+      - '../../sylius/data/mysql/databases:/var/lib/mysql'
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_LOG_CONSOLE: 1
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "5"
+    expose:
+      - 3306
+    networks:
+      - 'sylius'
+    restart: 'always'

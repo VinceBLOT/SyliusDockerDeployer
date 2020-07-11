@@ -1,0 +1,5 @@
+# Services
+##############################
+
+WITH_ADMINER=0
+WITH_MAILHOG=0

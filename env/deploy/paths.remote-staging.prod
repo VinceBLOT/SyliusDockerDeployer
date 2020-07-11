@@ -1,0 +1,4 @@
+# Paths
+##############################
+
+STACK_PATH=/home/${REMOTE_USER}/stack

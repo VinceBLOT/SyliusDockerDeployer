@@ -1,0 +1,9 @@
+version: '3.5'
+
+networks:
+  sylius:
+    name: 'sylius'
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.${NETWORK_SUBNET}.0.0/16

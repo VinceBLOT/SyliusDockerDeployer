@@ -1,0 +1,5 @@
+server {
+    server_name www.${SERVER_NAME};
+    include conf.d/snippets/8000.conf;
+    include conf.d/snippets/location.conf;
+}

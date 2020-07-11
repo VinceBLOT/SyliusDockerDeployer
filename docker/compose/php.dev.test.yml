@@ -1,0 +1,6 @@
+version: '3.5'
+services:
+
+  php:
+    volumes:
+      - '../../${APP_DEVELOPMENT_PATH}:${STACK_PATH}/${APP_CURRENT_RELEASE_PATH}'
