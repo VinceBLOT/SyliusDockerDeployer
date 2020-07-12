@@ -47,14 +47,14 @@ if [ "${COMMAND}" = "build" ]; then
 fi
 
 if [ "${COMMAND}" = "pull" ]; then
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib && cd ${LOCAL_STACK_PATH} && docker-compose ${COMPOSE_FILES} pull ${SERVICE}
+    cd ${LOCAL_STACK_PATH} && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib && docker-compose ${COMPOSE_FILES} pull ${SERVICE}
 fi
 
 if [ "${COMMAND}" = "up" ]; then
     if [ "${SERVICE}" = "" ]; then
-        cd ${LOCAL_STACK_PATH} && docker-compose ${COMPOSE_FILES} up -d --remove-orphans
+        cd ${LOCAL_STACK_PATH} && docker-compose ${COMPOSE_FILES} up -d --remove-orphans --no-build
     else
-        cd ${LOCAL_STACK_PATH} && docker-compose ${COMPOSE_FILES} up -d --remove-orphans --no-deps ${SERVICE}
+        cd ${LOCAL_STACK_PATH} && docker-compose ${COMPOSE_FILES} up -d --remove-orphans --no-deps --no-build ${SERVICE}
     fi
 fi
 
