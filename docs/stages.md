@@ -13,7 +13,7 @@ These are the stages you'll find and use as [filters](env-vars.md#organizing-env
 As we go down the path to the [docker-compose](docker.md#docker-compose) level and `APP_ENV` level, available stages are:
 
 * **docker-compose stages**: `dev`, `test`, `build`, `local-staging` and `prod`.
-* **App stages** (`APP_ENV`): `dev`, `test_cached` and `prod`.
+* **App stages** (`APP_ENV`): `dev`, `test`|`test_cached` and `prod`.
 
 Taking this into account, not all stages are read the same across the three levels:
 
@@ -21,12 +21,14 @@ Taking this into account, not all stages are read the same across the three leve
 
 * Also there is the `build` special case. When you setup production stages, `local-staging` for example, docker-compose is run as `build`, but when you run that stage after setup, docker-compose is then run as `local-staging`.
 
+* At **higher level** there is only one `test` stage. But depending on  what value you selected for `APP_ENV`, it could be `test` or `test_cached` at application level. 
+
 The complete stages matrix is as follows:
 
 | Conceptual stages | docker-compose | APP_ENV |
 |---------- |------------------- |-------- |
 | dev | dev | dev |
-| test | test | test_cached |
+| test | test | test ｜ test_cached |
 | build | build | prod |
 | local-staging | local-staging | prod |
 | remote-staging | prod | prod |

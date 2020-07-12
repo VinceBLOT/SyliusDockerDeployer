@@ -12,14 +12,6 @@ make unlock-local
 
 ### dev
 
-To be able to receive mails with `mailhog`, you need to enable it in your app code:
-
-```yaml
-# config/packages/dev/swiftmailer.yaml
-swiftmailer:
-    disable_delivery: false
-```
-
 To create a running instance of your development environment:
 
 ```bash
@@ -45,12 +37,7 @@ make populate-dev
 
 ### test
 
-To test your development repo you first have to make some changes to your app code. 
-
-* If you use Sylius version `1.7.5` or above, you should use [Chrome headless](services/chrome-headless.md).
-* And if you use Sylius version below `1.7.5` you should use [Selenium chrome](services/selenium-chrome.md) instead.
-
-And then, you can run test suites:
+To run test suites:
 
 ```bash
 # Test script is located on /deploy/scripts/run-tests.sh

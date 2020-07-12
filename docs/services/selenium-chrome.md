@@ -9,6 +9,12 @@ If you use Sylius version `1.7.5` or above, you should use [Chrome headless](chr
     ```bash
     # env/docker/services
     WITH_SELENIUM_CHROME=1
+    ```
+
+* If `APP_ENV` is set to `test_cached` you also have to enable `memcached`:
+
+    ```bash
+    # env/docker/services
     WITH_MEMCACHED=1
     ```
 
@@ -30,7 +36,7 @@ If you use Sylius version `1.7.5` or above, you should use [Chrome headless](chr
                             wd_host: "http://selenium-chrome:4444/wd/hub"
     ```
 
-* And also set `memcached` as `host` on `config/packages/test_cached/doctrine.yaml`:
+* Also, if `APP_ENV` is set to `test_cached` you have to set `memcached` as `host` on `config/packages/test_cached/doctrine.yaml`:
 
     ```yml
     # config/packages/test_cached/doctrine.yaml

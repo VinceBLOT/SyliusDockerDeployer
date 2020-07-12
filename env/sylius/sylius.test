@@ -1,10 +1,9 @@
 # Sylius
 ##############################
 
-APP_ENV=test_cached
-APP_DEBUG=0
+APP_ENV=test
 
 # Mysql
 ##############################
 
-MYSQL_DATABASE=sylius_test_cached
+MYSQL_DATABASE=sylius_test

@@ -78,13 +78,21 @@ Once you have setup all needed env vars, is time to tell Deployer to setup all l
 
 #### Setup `dev` stage
 
-First of all, as setup command also populates database, you have to select what type of data you want to be populated. For `dev` stage default is `fixtures`, but you can change it:
+* First of all, as setup command also populates database, you have to select what type of data you want to be populated. For `dev` stage default is `fixtures`, but you can change it:
 
-```bash
-# env/deploy/deploy.dev.override
-# Values: 0|setup|fixtures|dump (dump is not implemented yet)
-POPULATE_DATABASE=setup
-```
+  ```bash
+  # env/deploy/deploy.dev.override
+  # Values: 0|setup|fixtures|dump (dump is not implemented yet)
+  POPULATE_DATABASE=setup
+  ```
+
+* To be able to receive mails with `mailhog` during development, you need to enable it in your app code:
+
+  ```yaml
+  # config/packages/dev/swiftmailer.yaml
+  swiftmailer:
+      disable_delivery: false
+  ```
 
 Once you have defined that, setup will clone app repo, build it, generate `dev` cache, drop database if exist, create new database and populate it:
 
@@ -94,6 +102,18 @@ make setup-dev
 
 #### Setup `test` stage
 
+* First of all you have to define in what app environment your tests will run. During development, usually `test` is used, while `test_cached` is used for CI.
+
+    ```bash
+    # env/sylius/sylius.test
+    APP_ENV=test
+    ```
+
+* Then you also have to make some changes to your app code:
+
+  * If you use Sylius version `1.7.5` or above, go see [Chrome headless](services/chrome-headless.md).
+  * And if you use Sylius version below `1.7.5` go to [Selenium chrome](services/selenium-chrome.md) instead.
+
 It will use previously cloned repo, generate `test` cache, drop `test` database if exist, and create new `test` database:
 
 ```bash
@@ -102,7 +122,7 @@ make setup-test
 
 #### Setup `local-staging` stage
 
-It will checkout app from remote repo, build it, drop local production database if exist, and create new local production database. This is the build to test and on success deploy to production:
+It will checkout app from remote repo, build it, drop local `prod` database if exist, and create new local `prod` database. This is the build to test and on success deploy to production:
 
 ```bash
 make setup-local-staging

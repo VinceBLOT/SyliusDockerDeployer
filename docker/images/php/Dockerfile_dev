@@ -50,6 +50,30 @@ RUN set -xe \
     && apk del .build-deps \
     && rm -rf /tmp/*
 
+# PHP memcached extension
+RUN set -xe \
+    && apk add --no-cache --virtual .memcached-build-deps \
+        coreutils \
+        # for memcached extension
+        cyrus-sasl-dev \
+        libmemcached-dev \
+        libmemcached-libs \
+        libsasl \
+        libzip-dev \
+    && git clone https://github.com/php-memcached-dev/php-memcached.git /usr/src/php/ext/memcached/ \
+    && docker-php-ext-configure memcached --disable-memcached-sasl \
+    && docker-php-ext-install -j "$(nproc)" \
+        memcached \
+    && runDeps="$( \
+        scanelf --needed --nobanner --format '%n#p' --recursive /usr/local \
+            | tr ',' '\n' \
+            | sort -u \
+            | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
+    )" \
+    && apk add --virtual .run-deps $runDeps \
+    && apk del .memcached-build-deps \
+    && rm -rf /tmp/*
+
 # Xdebug
 ARG xdebug_version
 RUN set -xe \

@@ -3,7 +3,7 @@
 
 APP_SECRET=OVERRIDE_ME
 
-# Values: dev|test_cached|prod
+# Values: dev|test|test_cached|prod
 APP_ENV=dev
 # Values: 0|1
 APP_DEBUG=1

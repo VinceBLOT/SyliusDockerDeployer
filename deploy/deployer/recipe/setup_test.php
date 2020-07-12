@@ -15,7 +15,7 @@ use Deployer\Exception\GracefulShutdownException;
  * operations are already run inside app container.
  */
 task('setup_test', function () {
-    if (get('app_env') === 'test_cached') {
+    if (get('app_env') === 'test' || get('app_env') === 'test_cached') {
         set('release_path', get('static_release_path'));
         invoke('sylius:cache:clear');
         invoke('sylius:cache:warmup');
@@ -24,7 +24,7 @@ task('setup_test', function () {
     } else {
         throw new GracefulShutdownException(
             "Wrong environment.\n".
-            sprintf('This task should be called under "test_cached" environment. Please switch from "%s" to "test_cached".', get('app_env'))
+            sprintf('This task should be called under "test" or "test_cached" environment. Please switch from "%s" to "test" or "test_cached".', get('app_env'))
         );
     }
 })
