@@ -11,7 +11,7 @@ REMOTE_PORT=22
 # This is the remote user with granted access to your remote host. Sometimes
 # it is "root", but if you have the choice to set it up, setting it to your
 # local user is a good idea.
-REMOTE_USER=${LOCAL_USER}
+REMOTE_USER=OVERRIDE_ME
 # Some remote hosts (like google cloud platform) may need to
 # use sudo for filesystem operations.
 USE_SUDO=0
