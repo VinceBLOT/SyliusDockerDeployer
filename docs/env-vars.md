@@ -24,10 +24,17 @@ folder/topic
 You can use env vars as a value for another env var, for example, the following is allowed:
 
 ```bash
-MYSQL_DATABASE=sylius_dev
+APP_ENV=dev
+MYSQL_DATABASE=sylius_${APP_ENV}
 MYSQL_ROOT_PASSWORD=some_random_hash
-# env var as an env var value:
-DATABASE_URL=mysql://root:${MYSQL_ROOT_PASSWORD}@mysql/${MYSQL_DATABASE}
+DATABASE_URL=mysql://root:${MYSQL_ROOT_PASSWORD}@mysql/sylius_${APP_ENV}
 ```
 
-Just try to avoid circular references and you'll be safe.
+Just try to avoid circular references or chained assignments. For example, the following is **not allowed**:
+
+```bash
+APP_ENV=dev
+MYSQL_DATABASE=sylius_${APP_ENV}
+MYSQL_ROOT_PASSWORD=some_random_hash
+DATABASE_URL=mysql://root:${MYSQL_ROOT_PASSWORD}@mysql/${MYSQL_DATABASE}
+```

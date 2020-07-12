@@ -2,8 +2,3 @@
 ##############################
 
 APP_ENV=test
-
-# Mysql
-##############################
-
-MYSQL_DATABASE=sylius_test

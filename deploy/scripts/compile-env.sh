@@ -111,10 +111,12 @@ cat ${LOCAL_STACK_PATH}/.env.tmp | sort -t= -u -k1,1 >${LOCAL_STACK_PATH}/.env.f
 
 # Variable substitution
 FIRSTPASS_FILE=${LOCAL_STACK_PATH}/.env.firstpass
+# Replace spaces with __SPACE__
 sed -i "s/ /__SPACE__/g" ${FIRSTPASS_FILE}
 while IFS= read LINE; do
     (. ${FIRSTPASS_FILE} ; export $(cut -d= -f1 ${FIRSTPASS_FILE}) ; echo ${LINE} | envsubst)
 done <${FIRSTPASS_FILE} >${LOCAL_STACK_PATH}/.env
+# Replace __SPACE__ with spaces
 sed -i "s/__SPACE__/ /g" ${LOCAL_STACK_PATH}/.env
 
 # Cleanup

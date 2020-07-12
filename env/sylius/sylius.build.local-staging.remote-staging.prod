@@ -3,8 +3,3 @@
 
 APP_ENV=prod
 APP_DEBUG=0
-
-# Mysql
-##############################
-
-MYSQL_DATABASE=sylius_prod
