@@ -23,7 +23,8 @@ help:
 
 	@echo 'Deployer targets:'
 	@echo '  unlock-local'
-	@echo '  unlock-remote'
+	@echo '  unlock-staging'
+	@echo '  unlock-prod'
 	@echo '  setup-dev'
 	@echo '  update-dev'
 	@echo '  populate-dev'
@@ -66,8 +67,10 @@ help:
 	@echo '  run-tests'
 	@echo '  set-maintenance-on'
 	@echo '  set-maintenance-off'
-	@echo '  set-remote-maintenance-on'
-	@echo '  set-remote-maintenance-off'
+	@echo '  set-staging-maintenance-on'
+	@echo '  set-staging-maintenance-off'
+	@echo '  set-prod-maintenance-on'
+	@echo '  set-prod-maintenance-off'
 	@echo '  run-remote-database-backup'
 	@echo ''
 

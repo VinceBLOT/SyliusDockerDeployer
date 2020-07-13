@@ -2,7 +2,7 @@
 
 ## Local development
 
-### unlock-local
+### unlock
 
 Some local tasks like `update-dev`, `populate-dev` and `build` are managed by Deployer. Deployer places a `.lock` file when working, but if it ends unexpectedly, this lock is not removed. Deployer will warn you the next time and you'll have to remove this `.lock` file manually:
 
@@ -68,12 +68,13 @@ This build is a production build, so if everything is correct, you can safely de
 
 ## Remote deployment
 
-### unlock-remote
+### unlock
 
 All remote deployments are managed by Deployer. Deployer places a `.lock` file when working, but if it ends unexpectedly, this lock is not removed. Deployer will warn you the next time and you'll have to remove this `.lock` file manually:
 
 ```bash
-make unlock-remote
+make unlock-staging
+make unlock-prod
 ```
 
 ### remote-staging

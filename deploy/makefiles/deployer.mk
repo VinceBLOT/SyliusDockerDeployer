@@ -2,7 +2,8 @@
 #########################
 
 # make unlock-local
-# make unlock-remote
+# make unlock-staging
+# make unlock-prod
 # make setup-dev
 # make update-dev
 # make populate-dev
@@ -33,10 +34,20 @@ unlock-local: up-build
 .PHONY: unlock-local
 
 # REMOTE
-unlock-remote: up-build
+unlock-staging:
+	$(call env,remote-staging)
+	@$(MAKE) -f $(THIS_FILE) up-build
 	$(call dep, deploy:unlock) || echo "Deployer target 'deploy:unlock' failed"
 	@$(MAKE) -f $(THIS_FILE) down-build
-.PHONY: unlock-remote
+.PHONY: unlock-staging
+
+# REMOTE
+unlock-prod:
+	$(call env,prod)
+	@$(MAKE) -f $(THIS_FILE) up-build
+	$(call dep, deploy:unlock) || echo "Deployer target 'deploy:unlock' failed"
+	@$(MAKE) -f $(THIS_FILE) down-build
+.PHONY: unlock-prod
 
 #########################
 

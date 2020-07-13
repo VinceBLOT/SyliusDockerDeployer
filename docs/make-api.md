@@ -68,7 +68,7 @@ make build
 ### Remote staging
 
 ```bash
-make unlock-remote
+make unlock-staging
 make deploy-staging
 make rollback-staging
 ```
@@ -76,7 +76,7 @@ make rollback-staging
 ### Remote production
 
 ```bash
-make unlock-remote
+make unlock-prod
 make deploy-prod
 make rollback-prod
 ```
@@ -173,7 +173,9 @@ make set-maintenance-off
 ### Production
 
 ```bash
-make set-remote-maintenance-on
-make set-remote-maintenance-off
+make set-staging-maintenance-on
+make set-staging-maintenance-off
+make set-prod-maintenance-on
+make set-prod-maintenance-off
 make run-remote-database-backup
 ```

@@ -2,8 +2,10 @@
 #########################
 
 # make run-tests
-# make set-remote-maintenance-on
-# make set-remote-maintenance-off
+# make set-staging-maintenance-on
+# make set-staging-maintenance-off
+# make set-prod-maintenance-on
+# make set-prod-maintenance-off
 # make run-remote-database-backup
 
 # Targets
@@ -18,21 +20,34 @@ run-tests:
 	@$(MAKE) -f $(THIS_FILE) down-test
 .PHONY: run-tests
 
-# Only on prod
-set-remote-maintenance-on:
+set-staging-maintenance-on:
+	$(call env,remote-staging)
+	@cd $(THIS_PATH) ;\
+	export STACK_PATH=$(THIS_PATH) ;\
+	./deploy/scripts/set-remote-maintenance.sh on ;
+.PHONY: set-staging-maintenance-on
+
+set-staging-maintenance-off:
+	$(call env,remote-staging)
+	@cd $(THIS_PATH) ;\
+	export STACK_PATH=$(THIS_PATH) ;\
+	./deploy/scripts/set-remote-maintenance.sh off ;
+.PHONY: set-staging-maintenance-off
+
+set-prod-maintenance-on:
 	$(call env,prod)
 	@cd $(THIS_PATH) ;\
 	export STACK_PATH=$(THIS_PATH) ;\
 	./deploy/scripts/set-remote-maintenance.sh on ;
-.PHONY: set-remote-maintenance-on
+.PHONY: set-prod-maintenance-on
 
 # Only on prod
-set-remote-maintenance-off:
+set-prod-maintenance-off:
 	$(call env,prod)
 	@cd $(THIS_PATH) ;\
 	export STACK_PATH=$(THIS_PATH) ;\
 	./deploy/scripts/set-remote-maintenance.sh off ;
-.PHONY: set-remote-maintenance-off
+.PHONY: set-prod-maintenance-off
 
 # Only on prod
 run-remote-database-backup:
